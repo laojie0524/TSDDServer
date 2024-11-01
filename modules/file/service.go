@@ -43,15 +43,18 @@ type IService interface {
 func NewService(ctx *config.Context) IService {
 	var uploadService IUploadService
 	service := ctx.GetConfig().FileService
-	if service == config.FileServiceMinio {
+	switch service {
+	case config.FileServiceMinio:
 		uploadService = NewServiceMinio(ctx)
-	} else if service == config.FileServiceAliyunOSS {
+	case config.FileServiceAws:
+		uploadService = NewServiceAWS(ctx)
+	case config.FileServiceAliyunOSS:
 		uploadService = NewServiceOSS(ctx)
-	} else if service == config.FileServiceOBS {
+	case config.FileServiceOBS:
 		uploadService = NewServiceOBS(ctx)
-	} else if service == config.FileServiceQiniu {
+	case config.FileServiceQiniu:
 		uploadService = NewServiceQiniu(ctx)
-	} else {
+	default:
 		uploadService = NewSeaweedFS(ctx)
 	}
 	return &Service{
